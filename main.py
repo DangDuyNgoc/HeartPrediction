@@ -8,13 +8,15 @@ from tkinter import messagebox
 import os
 
 import matplotlib
-
 matplotlib.use("TKAgg")
+
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from matplotlib.figure import Figure
 import numpy as np
 import matplotlib.pyplot as plt
+
+from backend import *
 
 background = "#f0ddd5"
 framebg = "#ccc"
@@ -22,8 +24,8 @@ framefg= "#fefbfb"
 
 root = Tk()
 root.title("Heart Attack Prediction")
-root.geometry("1450x730+60+80") #chiều rộng là 1450 pixel và chiều cao là 730 pixel 
- # 60 vị trí từ phía bên trái của màn hình và 80 chỉ vị trí từ phía trên .
+root.geometry("1450x800+40+20") #chiều rộng là 1450 pixel và chiều cao là 730 pixel 
+ # 40 vị trí từ phía bên trái của màn hình và 20 chỉ vị trí từ phía trên .
 root.resizable(False, False) #không thể kéo căn chỉnh kích thước của cửa sổ bằng chuột.
 root.config(bg=background)
 
@@ -290,12 +292,64 @@ def handleAnalysis():
     print("M - thal", thalachChoice)
     print("M - thal", oldpeakChoice)
 
-    figureFrame = Figure(figsize=(5, 5), dpi=100)
-    a = figureFrame.add_subplot(111)
-    a.plot(['Sex', 'fbs', 'exang']), [genChoice, fbsChoice, exangChoice]
-    canvas = FigureCanvasTkAgg(figureFrame)
-    canvas.get_tk_widget().pack(side = tk.BOTTOM, fill = tk.BOTH, expand=True)
-    canvas._tkcanvas.place(width=250, height=250, x=600, y=400)
+    figureFrame1 = Figure(figsize=(5, 5), dpi=100)
+    a = figureFrame1.add_subplot(111)
+    a.plot(['Sex', 'fbs', 'exang'], [genChoice, fbsChoice, exangChoice])
+    canvas1 = FigureCanvasTkAgg(figureFrame1)
+    canvas1.get_tk_widget().pack(side = tk.BOTTOM, fill = tk.BOTH, expand=True)
+    canvas1._tkcanvas.place(width=250, height=250, x=600, y=240)
+
+    figureFrame2 = Figure(figsize=(5, 5), dpi=100)
+    a = figureFrame2.add_subplot(111)
+    a.plot(['age', 'trestbps', 'chol', 'thalach'], [A, tresChoice, cholChoice, thalachChoice])
+    canvas2 = FigureCanvasTkAgg(figureFrame2)
+    canvas2.get_tk_widget().pack(side = tk.BOTTOM, fill = tk.BOTH, expand=True)
+    canvas2._tkcanvas.place(width=250, height=250, x=880, y=240)
+
+    figureFrame3 = Figure(figsize=(5, 5), dpi=100)
+    a = figureFrame3.add_subplot(111)
+    a.plot(['oldpeak', 'resticg', 'cp'], [oldpeakChoice, resChoice, cpChoice])
+    canvas3 = FigureCanvasTkAgg(figureFrame3)
+    canvas3.get_tk_widget().pack(side = tk.BOTTOM, fill = tk.BOTH, expand=True)
+    canvas3._tkcanvas.place(width=250, height=250, x=600, y=520)
+
+    figureFrame4 = Figure(figsize=(5, 5), dpi=100)
+    a = figureFrame4.add_subplot(111)
+    a.plot([ 'slope', 'ca', 'thal'], [slopeChoice, caChoice, thalChoice])
+    canvas4 = FigureCanvasTkAgg(figureFrame4)
+    canvas4.get_tk_widget().pack(side = tk.BOTTOM, fill = tk.BOTH, expand=True)
+    canvas4._tkcanvas.place(width=250, height=250, x=880, y=520)
+
+    input_data = (A,
+        genChoice,
+        fbsChoice,
+        exangChoice,
+        cpChoice,
+        resChoice,
+        tresChoice,
+        cholChoice,
+        thalChoice,
+        thalachChoice,
+        oldpeakChoice,
+        slopeChoice,
+        caChoice
+    )
+
+    input_array = np.asanyarray(input_data)
+
+    input_reshape = input_array.reshape(1, -1)
+
+    prediction = model.predict(input_reshape)
+    print(prediction[0])
+
+    if(prediction[0] == 0):
+        print("The person does not have a heart disease")
+        report.config(text = f"Report: {0}", fg="#8dc63f")
+        report1.config(text=f"{name}, you do not have a heart disease")
+    else:
+        print("The person has a heart disease")
+        report.config(text = f"Report: {1}", fg="#ed1c24")
+        report1.config(text=f"{name}, you have a heart disease")
 
 
 analysis_button = Button(root, text="Analysis", font="arial 10 bold", cursor="hand2", bg=background, command=handleAnalysis).place(x=1130, y=240)
