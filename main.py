@@ -38,10 +38,10 @@ def Info():
 
     Label(info_window, text="age - age in years", font="arial 12").place(x=20, y=100)
     Label(info_window, text="sex - sex (1 = male; 0 = female)", font="arial 12").place(x=20, y=130)
-    Label(info_window, text="cp - chest pain type(0 = typical angina; 1 = atypical; 2 = non-anginal pain; 3 = asymptomatic)", 
+    Label(info_window, text="cp - chest pain type(0 = typical angina; 1 = atypical angin; 2 = non-anginal pain; 3 = asymptomatic)", 
         font="arial 12").place(x=20, y=160)
     Label(info_window, text="trestbps - resting blood pressure(in mm Hg on to the hospital)", font="arial 12").place(x=20, y=190)
-    Label(info_window, text="chol - serum cholesterol in mg/dl", font="arial 12").place(x=20, y=220)
+    Label(info_window, text="chol - serum cholesterol in mg/dl via BMI sensor", font="arial 12").place(x=20, y=220)
     Label(info_window, text="fbs - fasting blood sugar > 120 mg/dl (1 = true; 0 = false)", font="arial 12").place(x=20, y=250)
     Label(info_window, text="restecg - resting electrocardiographic results (0 = normal; 1 = having ST-T; 2 = hypertrophy)", font="arial 12").place(x=20, y=280)
     Label(info_window, text="thalach - maximum heart rate achieved", font="arial 12").place(x=20, y=310)
