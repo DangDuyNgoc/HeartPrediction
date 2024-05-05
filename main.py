@@ -51,7 +51,6 @@ def Info():
     Label(info_window, text="ca - number of major vessels", font="arial 12").place(x=20, y=430)
     Label(info_window, text="thal - Thalassemia (0 = normal; 1 = fixed defect; 2 reversible defect)", font="arial 12").place(x=20, y=460)
 
-
     info_window.mainloop()
 
 def logout():
@@ -376,8 +375,6 @@ def smokingChoice():
         mode.config(image=smoking_icon, activebackground="white")
         isSmoking = True
     print(choice)
-
-
 
 smoking_icon = smoking_icon.subsample(6)
 non_smoking_icon = non_smoking_icon.subsample(4)

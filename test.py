@@ -110,8 +110,116 @@ sns.barplot(x= Target_0_data['age'], y= Target_0_data['cp'], errorbar=None,
 sns.barplot(x= Target_1_data['age'], y= Target_1_data['cp'], errorbar=None,
             palette="dark:salmon_r",ax= axes[1]).set(title='Age - CP in Heart Disease = 1')
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
+
+fig = plt.figure(figsize=(18,15))
+gs = fig.add_gridspec(3,3)
+gs.update(wspace=0.5, hspace=0.25)
+ax0 = fig.add_subplot(gs[0,0])
+ax1 = fig.add_subplot(gs[0,1])
+ax2 = fig.add_subplot(gs[0,2])
+ax3 = fig.add_subplot(gs[1,0])
+ax4 = fig.add_subplot(gs[1,1])
+ax5 = fig.add_subplot(gs[1,2])
+ax6 = fig.add_subplot(gs[2,0])
+ax7 = fig.add_subplot(gs[2,1])
+ax8 = fig.add_subplot(gs[2,2])
+
+background_color = "white"
+fig.patch.set_facecolor(background_color) 
+ax0.set_facecolor(background_color) 
+ax1.set_facecolor(background_color) 
+ax2.set_facecolor(background_color) 
+ax3.set_facecolor(background_color) 
+ax4.set_facecolor(background_color) 
+ax5.set_facecolor(background_color) 
+ax6.set_facecolor(background_color) 
+ax7.set_facecolor(background_color) 
+ax8.set_facecolor(background_color) 
+
+# Title of the plot
+ax0.spines["bottom"].set_visible(False)
+ax0.spines["left"].set_visible(False)
+ax0.spines["top"].set_visible(False)
+ax0.spines["right"].set_visible(False)
+ax0.tick_params(left=False, bottom=False)
+ax0.set_xticklabels([])
+ax0.set_yticklabels([])
+ax0.text(0.5,0.5,
+         'Count plot for various\n categorical features',
+         horizontalalignment='center',
+         verticalalignment='center',
+         fontsize=18, fontweight='bold',
+         fontfamily='serif',
+         color="#000000")
+
+# Sex count
+ax1.text(0.3, 220, 'Sex', fontsize=14, fontweight='bold', fontfamily='serif', color="#000000")
+ax1.grid(color='#000000', linestyle=':', axis='y', zorder=0,  dashes=(1,5))
+sns.countplot(ax=ax1,data=Main_Dataset,x='sex',palette="dark:salmon_r")
+ax1.set_xlabel("")
+ax1.set_ylabel("")
+
+# Exng count
+ax2.text(0.3, 220, 'Exang', fontsize=14, fontweight='bold', fontfamily='serif', color="#000000")
+ax2.grid(color='#000000', linestyle=':', axis='y', zorder=0,  dashes=(1,5))
+sns.countplot(ax=ax2,data=Main_Dataset,x='exang',palette="dark:salmon_r")
+ax2.set_xlabel("")
+ax2.set_ylabel("")
+
+# Caa count
+ax3.text(1.5, 200, 'Caa', fontsize=14, fontweight='bold', fontfamily='serif', color="#000000")
+ax3.grid(color='#000000', linestyle=':', axis='y', zorder=0,  dashes=(1,5))
+sns.countplot(ax=ax3,data=Main_Dataset,x='ca',palette="dark:salmon_r")
+ax3.set_xlabel("")
+ax3.set_ylabel("")
+
+# Cp count
+ax4.text(1.5, 162, 'Cp', fontsize=14, fontweight='bold', fontfamily='serif', color="#000000")
+ax4.grid(color='#000000', linestyle=':', axis='y', zorder=0,  dashes=(1,5))
+sns.countplot(ax=ax4,data=Main_Dataset,x='cp',palette="dark:salmon_r")
+ax4.set_xlabel("")
+ax4.set_ylabel("")
+
+# Fbs count
+ax5.text(0.5, 290, 'Fbs', fontsize=14, fontweight='bold', fontfamily='serif', color="#000000")
+ax5.grid(color='#000000', linestyle=':', axis='y', zorder=0,  dashes=(1,5))
+sns.countplot(ax=ax5,data=Main_Dataset,x='fbs',palette="dark:salmon_r")
+ax5.set_xlabel("")
+ax5.set_ylabel("")
+
+# Restecg count
+ax6.text(0.75, 165, 'Restecg', fontsize=14, fontweight='bold', fontfamily='serif', color="#000000")
+ax6.grid(color='#000000', linestyle=':', axis='y', zorder=0,  dashes=(1,5))
+sns.countplot(ax=ax6,data=Main_Dataset,x='restecg',palette="dark:salmon_r")
+ax6.set_xlabel("")
+ax6.set_ylabel("")
+
+# Slp count
+ax7.text(0.85, 155, 'Slope', fontsize=14, fontweight='bold', fontfamily='serif', color="#000000")
+ax7.grid(color='#000000', linestyle=':', axis='y', zorder=0,  dashes=(1,5))
+sns.countplot(ax=ax7,data=Main_Dataset,x='slope',palette="dark:salmon_r")
+ax7.set_xlabel("")
+ax7.set_ylabel("")
+
+# Thall count
+ax8.text(1.2, 180, 'Thall', fontsize=14, fontweight='bold', fontfamily='serif', color="#000000")
+ax8.grid(color='#000000', linestyle=':', axis='y', zorder=0,  dashes=(1,5))
+sns.countplot(ax=ax8,data=Main_Dataset,x='thal',palette="dark:salmon_r")
+ax8.set_xlabel("")
+ax8.set_ylabel("")
+
+for s in ["top","right","left"]:
+    ax1.spines[s].set_visible(False)
+    ax2.spines[s].set_visible(False)
+    ax3.spines[s].set_visible(False)
+    ax4.spines[s].set_visible(False)
+    ax5.spines[s].set_visible(False)
+    ax6.spines[s].set_visible(False)
+    ax7.spines[s].set_visible(False)
+    ax8.spines[s].set_visible(False)
+# plt.show()
 
 Features = Main_Dataset.drop(columns='target')
 Features = pd.DataFrame(Features)
