@@ -84,8 +84,7 @@ Chol_noise = Main_Dataset[Main_Dataset["chol"]>400].index
 print(f"Chol_noise: ", Chol_noise)
 
 Main_Dataset.drop(index=Chol_noise, inplace=True)
-Main_Dataset.shape
-
+print(Main_Dataset.shape)
 
 fig = plt.figure(figsize = [15,3], dpi=200)
 sns.boxplot(x = 'chol', data = Main_Dataset,
@@ -223,6 +222,7 @@ for s in ["top","right","left"]:
 
 Features = Main_Dataset.drop(columns='target')
 Features = pd.DataFrame(Features)
+
 scaler = MinMaxScaler()
 Norm_data = scaler.fit_transform(Features)
 Norm_df = pd.DataFrame(Norm_data, columns= Features.columns)
@@ -231,3 +231,38 @@ desc_norm_df = describe(Norm_df)
 print(desc_norm_df)
 
 print(Norm_df.head(10))
+
+X = Norm_df
+y = Main_Dataset['target'].values.reshape(-1,1)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=40)
+
+print(X_train.shape)
+print(y_train.shape)
+
+training_acc_1 = []
+test_acc_1 = []
+
+range_k = range(3,20)
+
+for number_k in range_k:
+    knn = KNeighborsClassifier(n_neighbors = number_k, p=1)
+    knn.fit (X_train, y_train.ravel())
+    training_acc_1.append(knn.score(X_train,y_train))
+    test_acc_1.append(knn.score(X_test, y_test))
+
+# plt.figure(figsize=(15,5), dpi=100)    
+# plt.plot(range_k, training_acc_1, label='Acc of training', color= 'black')
+# plt.plot(range_k, test_acc_1, label='Acc of test set', color= '#E72B3B')
+# plt.ylabel('Acc')
+# plt.xlabel('Number of Neighbors')
+# plt.title('Acc - Number of K')
+# plt.legend()
+# plt.xticks(range(1,20))
+# plt.annotate('Best K_neighbor', xy=(3,0.89),xytext=(7.2,0.86), arrowprops=dict(facecolor='#E72B3B', shrink=0.05),fontsize=20)
+# plt.axvline(x = 3, linestyle= 'dotted', c= 'black')
+# plt.show()
+
+best_k_index = test_acc_1.index(max(test_acc_1))
+best_k = range_k[best_k_index]
+print("Best K_neighbor:", best_k)

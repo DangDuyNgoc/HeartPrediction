@@ -385,5 +385,4 @@ mode.place(x=350, y =495)
 logout_button = Button(root, text="logout", bg="red", cursor="hand2", command=logout)
 logout_button.place(x=1390, y=60)
 
-
 root.mainloop()
