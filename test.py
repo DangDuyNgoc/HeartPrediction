@@ -7,15 +7,12 @@ import numpy as np
 import seaborn as sns
 from sklearn import preprocessing
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn.metrics import classification_report
-import colorama
 from colorama import Back
 from sklearn.metrics import confusion_matrix
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
-from sklearn import tree
 from sklearn.preprocessing import MinMaxScaler
 
 # Đọc dữ liệu từ file CSV
@@ -90,8 +87,8 @@ fig = plt.figure(figsize = [15,3], dpi=200)
 sns.boxplot(x = 'chol', data = Main_Dataset,
         boxprops = dict(facecolor = "#E72B3B"))
     
-# plt.show()
-plt.close('all')
+plt.show()
+# plt.close('all')
 
 Target_0_data = Main_Dataset[Main_Dataset["target"]==0]
 Target_0_data = pd.DataFrame(Target_0_data)
@@ -266,3 +263,85 @@ for number_k in range_k:
 best_k_index = test_acc_1.index(max(test_acc_1))
 best_k = range_k[best_k_index]
 print("Best K_neighbor:", best_k)
+
+K = 3
+clf_1 = KNeighborsClassifier(K, p=1)
+clf_1.fit(X_train, y_train.ravel())
+y_pred_1 = clf_1.predict(X_test)
+
+print("Accuracy", metrics.accuracy_score(y_test,y_pred_1))
+
+Best_knn = metrics.accuracy_score(y_test,y_pred_1)
+
+conf_matrix_1 = confusion_matrix(y_test, y_pred_1)
+
+colors = ["black", "#E72B3B", "#E72B3B", "#E72B3B"]
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", colors)
+fig = plt.figure(figsize=(15, 3), dpi=200)
+ax = plt.subplot()
+plt.title("Confusion_matrix , KNN , K = 3 , P = 1")
+annot = np.array([[f"{conf_matrix_1[0, 0]}", f"{conf_matrix_1[0, 1]}"],
+                  [f"{conf_matrix_1[1, 0]}", f"{conf_matrix_1[1, 1]}"]], dtype=object)
+
+
+sns.heatmap(conf_matrix_1,
+            annot=annot,
+            annot_kws={"size": 11},
+            ax=ax,
+            fmt='',
+            cmap=cmap,
+            cbar=True,
+            )
+# plt.xlabel("Pred")
+# plt.ylabel("Real")
+# plt.show()
+
+XR = Main_Dataset.drop(columns='target')
+yR = Main_Dataset['target']
+
+rf = RandomForestClassifier()
+
+rf.fit(XR, yR)
+
+feature_importances = rf.feature_importances_
+
+feature_importance_df = pd.DataFrame({'Feature': XR.columns, 'Importance': feature_importances})
+feature_importance_df = feature_importance_df.sort_values(by='Importance', ascending=False)
+print(feature_importance_df)
+
+plt.figure(figsize=(10, 6))
+plt.barh(feature_importance_df['Feature'], feature_importance_df['Importance'], color='#E72B3B')
+plt.xlabel('Importance')
+plt.ylabel('Feature')
+plt.title('Feature Importance')
+plt.gca().invert_yaxis()  
+plt.show()
+
+# new_patient_data = {
+#    'age': 60,
+#     'sex': 1,  # Nam
+#     'cp': 2,   # Đau thắt ngực không ổn định
+#     'trestbps': 140,  # Huyết áp nghỉ
+#     'chol': 260,      # Cholesterol huyết thanh (mg/dL)
+#     'fbs': 1,         # Đường huyết nhị phân lớn hơn 120 mg/dL
+#     'restecg': 0,     # Kết quả điện tâm đồ bình thường
+#     'thalach': 120,   # Nhịp tim tối đa đạt được
+#     'exang': 1,       # Đau thắt ngực gây ra bởi hoạt động
+#     'oldpeak': 2.5,   # Giảm ST do vận động so với nghỉ
+#     'slope': 1,       # phân đoạn ST liên quan đến sự gia tăng do tập thể dục
+#     'ca': 1,          # động mạch vành
+#     'thal': 3         # Thalassemia do cơ sở 3
+# }
+
+# scaled_data = scaler.transform([list(new_patient_data.values())])
+# scaled_data_df = pd.DataFrame(scaled_data, columns=Features.columns)
+
+# Dự đoán bệnh tim bằng mô hình KNN
+# knn_prediction = clf_1.predict(scaled_data_df)
+
+# print("KNN Prediction:", knn_prediction)
+
+# if(knn_prediction[0] == 0):
+#     print("The person does not have a heart disease")
+# else:
+#     print("The person has a heart disease")
