@@ -10,13 +10,19 @@ import os
 import matplotlib
 matplotlib.use("TKAgg")
 
+# Load the Random Forest CLassifier model
+
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from matplotlib.figure import Figure
 import numpy as np
 
-from backend import *
+# from backend import *
+from trainingData import *
 # from test import *
+
+filename = 'heart-disease-prediction-model.pkl'
+model = pickle.load(open(filename, 'rb'))
 
 background = "#f0ddd5"
 framebg = "#62a7ff"
@@ -74,7 +80,7 @@ def Clear():
 Heading_entry = Frame(root, width=800, height=190, bg = "#df2d4b")
 Heading_entry.place(x=600, y = 20)
 
-Label(Heading_entry, text="Registration No.", font="arial 15", bg= "#df2d4b", fg= framefg).place(x= 30, y =0)
+Label(Heading_entry, text="Registration No.", font="arial 15", bg= "#df2d4b", fg= framefg).place(x=30, y =0)
 Label(Heading_entry, text="Date", font="arial 15", bg= "#df2d4b", fg= framefg).place(x= 430, y =0)
 Label(Heading_entry, text="Patient Name", font="arial 15", bg= "#df2d4b", fg= framefg).place(x= 30, y =90)
 Label(Heading_entry, text="Birth Year", font="arial 15", bg= "#df2d4b", fg= framefg).place(x= 430, y = 90)
@@ -88,7 +94,7 @@ Label(Heading_entry, image=Entry_image2, bg= "#df2d4b").place(x= 20, y =120)
 Label(Heading_entry, image=Entry_image2, bg= "#df2d4b").place(x= 430, y =120)
 
 Registration = IntVar()
-reg_entry = Entry(Heading_entry, textvariable=Registration, width=30, font= "arial 15", bg= "#0e5363", fg= "white", bd= 0)
+reg_entry = Entry(Heading_entry, textvariable=Registration, width=20, font= "arial 15", bg= "#0e5363", fg= "white", bd= 0)
 reg_entry.place(x=30, y =45)
 
 Date = StringVar()
@@ -103,15 +109,15 @@ name_entry = Entry(Heading_entry, textvariable=Name, width=20, font= "arial 15",
 name_entry.place(x = 30, y = 135)
 
 DayOfYear = IntVar()
-year_entry = Entry(Heading_entry, textvariable=DayOfYear, width=30, font= "arial 15", bg= "#ededed", fg= "#222222", bd= 0)
+year_entry = Entry(Heading_entry, textvariable=DayOfYear, width=20, font= "arial 15", bg= "#ededed", fg= "#222222", bd= 0)
 year_entry.place(x = 440, y = 135)
 
-Detail_entry = Frame(root, width = 550, height= 260, bg = "#dbe0e3")
+Detail_entry = Frame(root, width = 650, height= 260, bg = "#dbe0e3")
 Detail_entry.place(x = 30, y = 450)
 
 Label(Detail_entry, text = "sex:", font = "arial 15", bg = framebg, fg = framefg).place(x = 10, y =10)
-Label(Detail_entry, text = "fbs:", font = "arial 15", bg = framebg, fg = framefg).place(x = 180, y =10)
-Label(Detail_entry, text = "exang:", font = "arial 15", bg = framebg, fg = framefg).place(x = 335, y =10)
+Label(Detail_entry, text = "fbs:", font = "arial 15", bg = framebg, fg = framefg).place(x = 210, y =10)
+Label(Detail_entry, text = "exang:", font = "arial 15", bg = framebg, fg = framefg).place(x = 388, y =10)
 
 def genSelection(): 
     if gen.get() == 1:
@@ -143,20 +149,20 @@ def exangSelection():
 gen = IntVar()
 RMale = Radiobutton(Detail_entry, text= "Male", variable=gen, value= 1, command=genSelection)
 RFe = Radiobutton(Detail_entry, text= "Female", variable=gen, value= 2, command=genSelection)
-RMale.place(x = 53, y = 14)
-RFe.place(x = 105, y = 14)
+RMale.place(x = 60, y = 14)
+RFe.place(x = 123, y = 14)
 
 fbs = IntVar() # đường huyết sau một thời gian nhịn ăn
 RTrue = Radiobutton(Detail_entry, text= "True", variable=fbs, value= 1, command=fbsSelection)
 RFalse = Radiobutton(Detail_entry, text= "False", variable=fbs, value= 2, command=fbsSelection)
-RTrue.place(x = 220, y =14)
-RFalse.place(x = 265, y = 14)
+RTrue.place(x = 258, y =14)
+RFalse.place(x = 312, y = 14)
 
 exang = IntVar() # tập thể dục gây đau thắt ngực Exercise induced angina
 R1 = Radiobutton(Detail_entry, text= "Yes", variable=exang, value= 1, command=exangSelection)
 R2 = Radiobutton(Detail_entry, text= "No", variable=exang, value= 2, command=exangSelection)
-R1.place(x = 400, y =14)
-R2.place(x = 445, y = 14)
+R1.place(x = 470, y =14)
+R2.place(x = 520, y = 14)
 
 Label(Detail_entry, text = "cp", font = "arial 15", bg = framebg, fg = framefg).place(x=10, y =50)
 Label(Detail_entry, text = "restecg", font = "arial 15", bg = framebg, fg = framefg).place(x=10, y =90)
@@ -203,16 +209,16 @@ slope_combobox = Combobox(Detail_entry, values= [
 ca_combobox = Combobox(Detail_entry, values= ['0', '1', '2', '3', '4'], font="arial 12", state="r", width=14)
 thal_combobox = Combobox(Detail_entry, values= ['0', '1', '2', '3'], font="arial 12", state="r", width=14)
 
-cp_combobox.place(x=38, y=52)
-restecg_combobox.place(x=82, y=93)
-slope_combobox.place(x=62, y=133)
-ca_combobox.place(x=38, y=172)
-thal_combobox.place(x=47, y=212)
+cp_combobox.place(x=44, y=52)
+restecg_combobox.place(x=100, y=93)
+slope_combobox.place(x=78, y=133)
+ca_combobox.place(x=44, y=172)
+thal_combobox.place(x=58, y=212)
 
-Label(Detail_entry, text="trestbps", font="arial 13", width=7, bg=framebg, fg=framefg).place(x=240, y = 90)
-Label(Detail_entry, text="chol", font="arial 13", width=7, bg=framebg, fg=framefg).place(x=240, y = 130)
-Label(Detail_entry, text="thalach", font="arial 13", width=7, bg=framebg, fg=framefg).place(x=240, y = 170)
-Label(Detail_entry, text="odlpeak", font="arial 13", width=7, bg=framebg, fg=framefg).place(x=240, y = 210)
+Label(Detail_entry, text="trestbps", font="arial 13", width=7, bg=framebg, fg=framefg).place(x=260, y = 90)
+Label(Detail_entry, text="chol", font="arial 13", width=7, bg=framebg, fg=framefg).place(x=260, y = 130)
+Label(Detail_entry, text="thalach", font="arial 13", width=7, bg=framebg, fg=framefg).place(x=260, y = 170)
+Label(Detail_entry, text="odlpeak", font="arial 13", width=7, bg=framebg, fg=framefg).place(x=260, y = 210)
 
 trestbps = StringVar()
 chol = StringVar()
@@ -224,21 +230,21 @@ chol_entry = Entry(Detail_entry, textvariable=chol, width= 10, font= "arial 15",
 thalach_entry = Entry(Detail_entry, textvariable=thalach, width= 10, font= "arial 15", bg = "#ededed", fg="#222222", bd=0)
 oldpeak_entry = Entry(Detail_entry, textvariable=oldpeak, width= 10, font= "arial 15", bg = "#ededed", fg="#222222", bd=0)
 
-trestbps_entry.place(x=320, y=90)
-chol_entry.place(x=320, y=130)
-thalach_entry.place(x=320, y=170)
-oldpeak_entry.place(x=320, y=210)
+trestbps_entry.place(x=360, y=90)
+chol_entry.place(x=360, y=130)
+thalach_entry.place(x=360, y=170)
+oldpeak_entry.place(x=360, y=210)
 
 # Report
 report_image = PhotoImage(file='images/Report.png')
 report_bg = Label(image=report_image, bg=background)
-report_bg.place(x=1115, y=320)
+report_bg.place(x=1180, y=320)
 
 report = Label(root, font="arial 20 bold", bg="white", fg="#8dc63f")
-report.place(x=1170, y=550)
+report.place(x=1225, y=550)
 
-report1 = Label(root, font="arial 10 bold", bg="white")
-report1.place(x=1130, y=610)
+report1 = Label(root, font="arial 10 bold", bd=0)
+report1.place(x=1180, y=610)
 
 # graph
 graph_image = PhotoImage(file='images/graph.png')
@@ -297,7 +303,7 @@ def handleAnalysis():
         tresChoice = int(trestbps.get())
         cholChoice = int(chol.get())
         thalachChoice = int(thalach.get())
-        oldpeakChoice = int(oldpeak.get())
+        oldpeakChoice = float(oldpeak.get())
     except:
         messagebox.showerror("Error", "Missing Data!")
         return
@@ -363,25 +369,24 @@ def handleAnalysis():
 
     input_reshape = input_array.reshape(1, -1)
 
-    # prediction = model.predict(input_reshape)
-    # print(prediction[0])
+    prediction = model.predict(input_reshape)
+    print(prediction[0])
 
     # knn_prediction = clf_1.predict(input_reshape)
 
-    # if(knn_prediction[0] == 0):
-    #     print("The person does not have a heart disease")
-    #     report.config(text = f"Report: {0}", fg="#8dc63f")
-    #     report1.config(text=f"{name}, you do not have a heart disease")
-    # else:
-    #     print("The person has a heart disease")
-    #     report.config(text = f"Report: {1}", fg="#ed1c24")
-    #     report1.config(text=f"{name}, you have a heart disease")
-
+    if(prediction[0] == 0):
+        print("The person does not have a heart disease")
+        report.config(text = f"Report: {0}", fg="#8dc63f")
+        report1.config(text=f"{name}, you dont have heart disease")
+    else:
+        print("The person has a heart disease")
+        report.config(text = f"Report: {1}", fg="#ed1c24")
+        report1.config(text=f"{name}, you have heart disease")
 
 # analysis button
 analysis_button = PhotoImage(file='images/Analysis.png')
 analysis_button = analysis_button.subsample(2)
-Button(root, image=analysis_button, bd=0, bg=background, cursor='hand2', command=handleAnalysis).place(x=1130, y=260)
+Button(root, image=analysis_button, bd=0, bg=background, cursor='hand2', command=handleAnalysis).place(x=1200, y=260)
 
 # info button
 info_button = PhotoImage(file='images/info.png')
@@ -389,7 +394,7 @@ Button(root, image=info_button, cursor="hand2", bd=0, background=background, com
 
 # save button
 save_button = PhotoImage(file='images/save.png')
-Button(root, image=save_button, cursor="hand2", bd=0, background=background).place(x=1270, y=260)
+Button(root, image=save_button, cursor="hand2", bd=0, background=background).place(x=1320, y=260)
 
 # logout button
 logout_button = PhotoImage(file='images/logout_icon.png')
@@ -404,6 +409,5 @@ non_smoking_icon = PhotoImage(file="images/icon.png")
 
 smoking_icon = smoking_icon.subsample(6)
 non_smoking_icon = non_smoking_icon.subsample(4)
-
 
 root.mainloop()
