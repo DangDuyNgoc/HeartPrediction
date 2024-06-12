@@ -67,15 +67,42 @@ def describe(Main_Dataset):
 desc_df = describe(Main_Dataset)
 print(desc_df)
 
+df_cleaned = Main_Dataset.copy()
 # Define the continuous features
 Numerical = ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']
 fig = plt.figure(figsize=[15, 10], dpi=100)
 for i in range(len(Numerical)):
     plt.subplot(3, 2, i + 1)
     sns.boxplot(x=Numerical[i], data=Main_Dataset, boxprops=dict(facecolor="#E72B3B"), patch_artist=True)
+        
+# plt.tight_layout()
+# plt.show()
+
+# Function to remove outliers using IQR method
+def remove_outliers(df, numerical_features):
+    for feature in numerical_features:
+        Q1 = df[feature].quantile(0.25)
+        Q3 = df[feature].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        # Filtering the dataframe
+        df = df[(df[feature] >= lower_bound) & (df[feature] <= upper_bound)]
+    return df
+
+# Remove outliers from the dataset
+df_cleaned = remove_outliers(df_cleaned, Numerical)
+
+# Plotting box plots before and after removing outliers
+fig = plt.figure(figsize=[15, 10], dpi=100)
+for i in range(len(Numerical)):
+    plt.subplot(3, 2, i + 1)
+    sns.boxplot(x=Numerical[i], data=df_cleaned, boxprops=dict(facecolor="#E72B3B"), patch_artist=True)
+    plt.title(f'After - {Numerical[i]}')
 
 # plt.tight_layout()
 # plt.show()
+
 
 Chol_noise = Main_Dataset[Main_Dataset["chol"]>400].index
 print(f"Chol_noise: ", Chol_noise)
@@ -83,12 +110,13 @@ print(f"Chol_noise: ", Chol_noise)
 Main_Dataset.drop(index=Chol_noise, inplace=True)
 print(Main_Dataset.shape)
 
-fig = plt.figure(figsize = [15,3], dpi=200)
-sns.boxplot(x = 'chol', data = Main_Dataset,
-        boxprops = dict(facecolor = "#E72B3B"))
+# fig = plt.figure(figsize = [15,3], dpi=200)
+# sns.boxplot(x = 'chol', data = Main_Dataset,
+#         boxprops = dict(facecolor = "#E72B3B"))
     
-plt.show()
 # plt.close('all')
+# plt.show()
+plt.close('all')
 
 Target_0_data = Main_Dataset[Main_Dataset["target"]==0]
 Target_0_data = pd.DataFrame(Target_0_data)
@@ -100,14 +128,104 @@ print("The shape of data when target is '1': Disease",Target_1_data.shape)
 Target_0_data.sort_values(by=['age'], inplace=True)
 Target_1_data.sort_values(by=['age'], inplace=True)
 
-fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 5), dpi=100)
-sns.barplot(x= Target_0_data['age'], y= Target_0_data['cp'], errorbar=None,
-            palette="dark:salmon_r",ax= axes[0]).set(title='Age - CP in Heart Disease = 0')
-sns.barplot(x= Target_1_data['age'], y= Target_1_data['cp'], errorbar=None,
-            palette="dark:salmon_r",ax= axes[1]).set(title='Age - CP in Heart Disease = 1')
+# fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 5), dpi=100)
+# sns.barplot(x= Target_0_data['age'], y= Target_0_data['cp'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[0]).set(title='Age - CP in Heart Disease = 0')
+# sns.barplot(x= Target_1_data['age'], y= Target_1_data['cp'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[1]).set(title='Age - CP in Heart Disease = 1')
 
-# plt.tight_layout()
-# plt.show()
+# fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 5), dpi=200)
+# sns.barplot(x= Target_0_data['age'], y= Target_0_data['fbs'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[0]).set(title='Age - fbs in Heart Disease = 0')
+# sns.barplot(x= Target_1_data['age'], y= Target_1_data['fbs'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[1]).set(title='Age - fbs in Heart Disease = 1')
+
+
+# fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 5), dpi=200)
+# sns.barplot(x= Target_0_data['age'], y= Target_0_data['restecg'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[0]).set(title='Age - restecg in Heart Disease = 0')
+# sns.barplot(x= Target_1_data['age'], y= Target_1_data['restecg'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[1]).set(title='Age - restecg in Heart Disease = 1')
+
+# fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 5), dpi=200)
+# sns.barplot(x= Target_0_data['age'], y= Target_0_data['exang'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[0]).set(title='Age - exang in Heart Disease = 0')
+# sns.barplot(x= Target_1_data['age'], y= Target_1_data['exang'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[1]).set(title='Age - exang in Heart Disease = 1')
+
+# fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 5), dpi=200)
+# sns.barplot(x= Target_0_data['age'], y= Target_0_data['slope'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[0]).set(title='Age - slope in Heart Disease = 0')
+# sns.barplot(x= Target_1_data['age'], y= Target_1_data['slope'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[1]).set(title='Age - slope in Heart Disease = 1')
+
+# fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 5), dpi=200)
+# sns.barplot(x= Target_0_data['age'], y= Target_0_data['ca'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[0]).set(title='Age - ca in Heart Disease = 0')
+# sns.barplot(x= Target_1_data['age'], y= Target_1_data['ca'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[1]).set(title='Age - ca in Heart Disease = 1')
+
+# fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 5), dpi=200)
+# sns.barplot(x= Target_0_data['age'], y= Target_0_data['thal'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[0]).set(title='Age - thal in Heart Disease = 0')
+# sns.barplot(x= Target_1_data['age'], y= Target_1_data['thal'], errorbar=None,
+#             palette="dark:salmon_r",ax= axes[1]).set(title='Age - thal in Heart Disease = 1')
+
+# plt.figure(figsize=(20,5), dpi=200)
+# plt.plot(Target_0_data['age'], Target_0_data['trestbps'], color= '#E72B3B')
+# plt.scatter(Target_1_data['age'], Target_1_data['trestbps'], color= 'black')
+
+# plt.xticks(fontsize=15)
+# plt.yticks(fontsize=15)
+
+# plt.legend(["Without Disease","With Disease"], fontsize=15)
+
+# plt.title("Age - Resting blood pressure (in mm Hg)", fontsize=20)
+# plt.xlabel("Age", fontsize=15)
+# plt.ylabel("trtbps", fontsize=15)
+
+# plt.figure(figsize=(20,5), dpi=200)
+# plt.plot(Target_0_data['age'], Target_0_data['chol'], color= '#E72B3B')
+# plt.scatter(Target_1_data['age'], Target_1_data['chol'], color= 'black')
+
+# plt.xticks(fontsize=15)
+# plt.yticks(fontsize=15)
+
+# plt.legend(["Without Disease","With Disease"], fontsize=15)
+
+# plt.title("Age - Cholestoral in mg/dl fetched", fontsize=20)
+# plt.xlabel("Age", fontsize=15)
+# plt.ylabel("chol", fontsize=15)
+
+# plt.figure(figsize=(20,5), dpi=200)
+# plt.plot(Target_0_data['age'], Target_0_data['thalach'], color= '#E72B3B')
+# plt.scatter(Target_1_data['age'], Target_1_data['thalach'], color= 'black')
+
+# plt.xticks(fontsize=15)
+# plt.yticks(fontsize=15)
+
+# plt.legend(["Without Disease","With Disease"], fontsize=15)
+
+# plt.title("Age - thalach", fontsize=20)
+# plt.xlabel("Age", fontsize=15)
+# plt.ylabel("thalach", fontsize=15)
+
+plt.figure(figsize=(20,5), dpi=200)
+plt.plot(Target_0_data['age'], Target_0_data['oldpeak'], color= '#E72B3B')
+plt.scatter(Target_1_data['age'], Target_1_data['oldpeak'], color= 'black')
+
+plt.xticks(fontsize=15)
+plt.yticks(fontsize=15)
+
+plt.legend(["Without Disease","With Disease"], fontsize=15)
+
+plt.title("Age - ST depression caused by activity", fontsize=20)
+plt.xlabel("Age", fontsize=15)
+plt.ylabel("oldpeak", fontsize=15)
+
+# plt.close('all')
+plt.tight_layout()
+plt.show()
 
 fig = plt.figure(figsize=(18,15))
 gs = fig.add_gridspec(3,3)
@@ -157,7 +275,7 @@ sns.countplot(ax=ax1,data=Main_Dataset,x='sex',palette="dark:salmon_r")
 ax1.set_xlabel("")
 ax1.set_ylabel("")
 
-# Exng count
+# Exang count
 ax2.text(0.3, 220, 'Exang', fontsize=14, fontweight='bold', fontfamily='serif', color="#000000")
 ax2.grid(color='#000000', linestyle=':', axis='y', zorder=0,  dashes=(1,5))
 sns.countplot(ax=ax2,data=Main_Dataset,x='exang',palette="dark:salmon_r")
@@ -315,7 +433,7 @@ plt.xlabel('Importance')
 plt.ylabel('Feature')
 plt.title('Feature Importance')
 plt.gca().invert_yaxis()  
-plt.show()
+# plt.show()
 
 # new_patient_data = {
 #    'age': 60,

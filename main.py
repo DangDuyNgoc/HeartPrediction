@@ -38,31 +38,65 @@ root.config(bg=background)
 image_icon = PhotoImage(file='images/icon.png')
 root.iconphoto(False, image_icon)
 
+
+
 logo = PhotoImage(file='images/header.png')
 header = Label(image=logo, bg=background)
 header.place(x=0, y=0)
 
-def Info():
+def display_info(language):
     info_window = Toplevel(root)
     info_window.title("info")
     info_window.geometry("700x600+100+100")
 
-    Label(info_window, text="Information related to dataset", font="robot 15 bold").pack(padx=20, pady=20)
+    if language == 'English':
+        info_text = [
+            "age - age in years",
+            "sex - sex (1 = male; 0 = female)",
+            "cp - chest pain type(0 = typical angina; 1 = atypical angina; 2 = non-anginal pain; 3 = asymptomatic)",
+            "trestbps - resting blood pressure (in mm Hg on admission to the hospital)",
+            "chol - serum cholesterol in mg/dl",
+            "fbs - fasting blood sugar > 120 mg/dl (1 = true; 0 = false)",
+            "restecg - resting electrocardiographic results (0 = normal; 1 = ST-T wave abnormality; 2 = showing probable or definite left ventricular hypertrophy)",
+            "thalach - maximum heart rate achieved",
+            "exang - exercise-induced angina (1 = yes; 0 = no)",
+            "oldpeak - ST depression induced by exercise relative to rest",
+            "slope - the slope of the peak exercise ST segment (0 = upsloping; 1 = flat; 2 = downsloping)",
+            "ca - number of major vessels (0-3) colored by fluoroscopy",
+            "thal - Thalassemia (0 = normal; 1 = fixed defect; 2 = reversible defect)"
+        ]
+    else:  # Vietnamese
+        info_text = [
+            "age - tuổi tính bằng năm",
+            "sex - giới tính (1 = nam; 0 = nữ)",
+            "cp - loại đau ngực (0 = đau thắt ngực điển hình; 1 = đau thắt ngực không điển hình; 2 = đau không do mạch vành; 3 = không có triệu chứng)",
+            "trestbps - huyết áp nghỉ ngơi (mm Hg khi nhập viện)",
+            "chol - cholesterol huyết thanh (mg/dl)",
+            "fbs - đường huyết đói > 120 mg/dl (1 = đúng; 0 = sai)",
+            "restecg - kết quả điện tâm đồ nghỉ (0 = bình thường; 1 = ST-T bất thường; 2 = phì đại thất trái rõ rệt hoặc chắc chắn)",
+            "thalach - nhịp tim tối đa đạt được",
+            "exang - đau thắt ngực do tập thể dục (1 = có; 0 = không)",
+            "oldpeak - mức độ trầm cảm ST do tập thể dục so với lúc nghỉ",
+            "slope - độ dốc của đoạn ST khi tập thể dục (0 = lên dốc; 1 = phẳng; 2 = xuống dốc)",
+            "ca - số lượng mạch chính (0-3) được làm nổi bật bởi fluoroscopy",
+            "thal - Thalassemia (0 = bình thường; 1 = khiếm khuyết cố định; 2 = khiếm khuyết hồi phục)"
+        ]
 
-    Label(info_window, text="age - age in years", font="arial 12").place(x=20, y=100)
-    Label(info_window, text="sex - sex (1 = male; 0 = female)", font="arial 12").place(x=20, y=130)
-    Label(info_window, text="cp - chest pain type(0 = typical angina; 1 = atypical angin; 2 = non-anginal pain; 3 = asymptomatic)", 
-        font="arial 12").place(x=20, y=160)
-    Label(info_window, text="trestbps - resting blood pressure(in mm Hg on to the hospital)", font="arial 12").place(x=20, y=190)
-    Label(info_window, text="chol - serum cholesterol in mg/dl via BMI sensor", font="arial 12").place(x=20, y=220)
-    Label(info_window, text="fbs - fasting blood sugar > 120 mg/dl (1 = true; 0 = false)", font="arial 12").place(x=20, y=250)
-    Label(info_window, text="restecg - resting electrocardiographic results (0 = normal; 1 = having ST-T; 2 = hypertrophy)", font="arial 12").place(x=20, y=280)
-    Label(info_window, text="thalach - maximum heart rate achieved", font="arial 12").place(x=20, y=310)
-    Label(info_window, text="exang - exercise induced angina (1 = yes; 0 = no)", font="arial 12").place(x=20, y=340)
-    Label(info_window, text="oldpeak - ST depression induced by exercise relative to rest", font="arial 12").place(x=20, y=370)
-    Label(info_window, text="slope - the slope of the peak exercise ST segment(0 = upsloping; 1 = flat; 2 = downsloping )", font="arial 12").place(x=20, y=400)
-    Label(info_window, text="ca - number of major vessels", font="arial 12").place(x=20, y=430)
-    Label(info_window, text="thal - Thalassemia (0 = normal; 1 = fixed defect; 2 reversible defect)", font="arial 12").place(x=20, y=460)
+    Label(info_window, text="Information related to dataset", font="robot 15 bold").pack(padx=20, pady=20)
+    for idx, text in enumerate(info_text):
+        Label(info_window, text=text, font="arial 12").place(x=20, y=100 + 30 * idx)
+
+    info_window.mainloop()
+
+def Info():
+    info_window = Toplevel(root)
+    info_window.title("Info")
+    info_window.geometry("400x200+100+100")
+
+    Label(info_window, text="Choose Language", font="robot 15 bold").pack(padx=20, pady=20)
+
+    Button(info_window, text="English", font="arial 12", command=lambda: display_info('English')).pack(pady=10)
+    Button(info_window, text="Vietnamese", font="arial 12", command=lambda: display_info('Vietnamese')).pack(pady=10)
 
     info_window.mainloop()
 
@@ -206,8 +240,8 @@ slope_combobox = Combobox(Detail_entry, values= [
     '1 = flat', 
     '2 = downsloping'
 ], font="arial 12", state="r", width=12)
-ca_combobox = Combobox(Detail_entry, values= ['0', '1', '2', '3', '4'], font="arial 12", state="r", width=14)
-thal_combobox = Combobox(Detail_entry, values= ['0', '1', '2', '3'], font="arial 12", state="r", width=14)
+ca_combobox = Combobox(Detail_entry, values= ['0', '1', '2', '3'], font="arial 12", state="r", width=14)
+thal_combobox = Combobox(Detail_entry, values= ['0', '1', '2'], font="arial 12", state="r", width=14)
 
 cp_combobox.place(x=44, y=52)
 restecg_combobox.place(x=100, y=93)
@@ -383,6 +417,29 @@ def handleAnalysis():
         report.config(text = f"Report: {1}", fg="#ed1c24")
         report1.config(text=f"{name}, you have heart disease")
 
+def Save():
+    Id = Registration.get()
+    reg_entry.delete(0, END)
+
+    Date = d1
+    date_entry.delete(0, END)
+    date_entry.insert(0, d1)
+    
+    DayOfYear = Year.get()
+    year_entry.delete(0, END)
+    
+    Name = name.get()
+    name_entry.delete(0, END)
+    
+    save = messagebox.askyesno("Confirmation", "Do you want to save this record?")
+    if save > 0:
+        file=open("Report.txt", "a")
+        file.write(str(Id) + "," + Date + "," + DayOfYear + "," + Name + "\n")
+        file.close()
+        messagebox.showinfo("Success", "Record Saved Successfully")
+    else:
+        return
+
 # analysis button
 analysis_button = PhotoImage(file='images/Analysis.png')
 analysis_button = analysis_button.subsample(2)
@@ -394,20 +451,11 @@ Button(root, image=info_button, cursor="hand2", bd=0, background=background, com
 
 # save button
 save_button = PhotoImage(file='images/save.png')
-Button(root, image=save_button, cursor="hand2", bd=0, background=background).place(x=1320, y=260)
+Button(root, image=save_button, cursor="hand2", bd=0, background=background, command=Save).place(x=1320, y=260)
 
 # logout button
 logout_button = PhotoImage(file='images/logout_icon.png')
 logout_button = logout_button.subsample(2)
 Button(root, image=logout_button, bg=background, bd=0, cursor="hand2", command=logout).place(x=1370, y=220)
-
-isSmoking = True
-choice = "smoking"
-
-smoking_icon = PhotoImage(file="images/icon.png")
-non_smoking_icon = PhotoImage(file="images/icon.png")
-
-smoking_icon = smoking_icon.subsample(6)
-non_smoking_icon = non_smoking_icon.subsample(4)
 
 root.mainloop()
