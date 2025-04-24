@@ -76,7 +76,7 @@ for i in range(len(Numerical)):
     sns.boxplot(x=Numerical[i], data=Main_Dataset, boxprops=dict(facecolor="#E72B3B"), patch_artist=True)
         
 # plt.tight_layout()
-# plt.show()
+# plt.show() 
 
 # Function to remove outliers using IQR method
 def remove_outliers(df, numerical_features):

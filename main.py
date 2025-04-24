@@ -17,9 +17,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import numpy as np
 
-# from backend import *
 from trainingData import *
-# from test import *
+from db_connection import connect_db
 
 filename = 'heart-disease-prediction-model.pkl'
 model = pickle.load(open(filename, 'rb'))
@@ -27,6 +26,14 @@ model = pickle.load(open(filename, 'rb'))
 background = "#f0ddd5"
 framebg = "#62a7ff"
 framefg= "#fefbfb"
+
+# Connect to the database
+try:
+    db_connection = connect_db()
+    print("Database connected successfully!")
+except Exception as e:
+    print(f"Error connecting to database: {e}")
+    db_connection = None
 
 root = Tk()
 root.title("Heart Attack Prediction")
@@ -99,7 +106,6 @@ def Info():
     Button(info_window, text="Vietnamese", font="arial 12", command=lambda: display_info('Vietnamese')).pack(pady=10)
 
     info_window.mainloop()
-
 def logout():
     root.destroy()
 
@@ -133,7 +139,7 @@ reg_entry.place(x=30, y =45)
 
 Date = StringVar()
 today = date.today()
-d1 = today.strftime("%d/%m/%Y")
+d1 = today.strftime("%Y/%m/%d")
 date_entry = Entry(Heading_entry, textvariable=Date, width=15, font= "arial 15", bg= "#0e5363", fg= "white", bd= 0)
 date_entry.place(x = 440, y = 45)
 Date.set(d1)
@@ -417,28 +423,107 @@ def handleAnalysis():
         report.config(text = f"Report: {1}", fg="#ed1c24")
         report1.config(text=f"{name}, you have heart disease")
 
-def Save():
-    Id = Registration.get()
-    reg_entry.delete(0, END)
-
-    Date = d1
-    date_entry.delete(0, END)
-    date_entry.insert(0, d1)
-    
-    DayOfYear = Year.get()
-    year_entry.delete(0, END)
-    
-    Name = name.get()
-    name_entry.delete(0, END)
-    
-    save = messagebox.askyesno("Confirmation", "Do you want to save this record?")
-    if save > 0:
-        file=open("Report.txt", "a")
-        file.write(str(Id) + "," + Date + "," + DayOfYear + "," + Name + "\n")
-        file.close()
-        messagebox.showinfo("Success", "Record Saved Successfully")
+def save_patient_data(registration_no, patient_name, birth_year):
+    if db_connection: 
+        try:
+            cursor = db_connection.cursor()
+            query = """
+                INSERT INTO patients (registration_no, patient_name, birth_year)
+                VALUES (%s, %s, %s)
+            """
+            cursor.execute(query, (registration_no, patient_name, birth_year))
+            db_connection.commit()
+            print("Patient data saved successfully!")
+            return cursor.lastrowid  # Return the ID of the newly inserted patient
+        except Exception as e:
+            print(f"Error saving patient data: {e}")
+        finally:
+            cursor.close()
     else:
+        print("No database connection available.")
+
+def save_prediction_input(patient_id, date, sex, cp, fbs, restecg, trestbps, chol, thalach, exang, oldpeak, slope, ca, thal):
+    if db_connection:
+        try:
+            cursor = db_connection.cursor()
+            query = """
+                INSERT INTO prediction_inputs (patient_id, date, sex, cp, fbs, restecg, trestbps, chol, thalach, exang, oldpeak, slope, ca, thal) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(query, (patient_id, date, sex, cp, fbs, restecg, trestbps, chol, thalach, exang, oldpeak, slope, ca, thal))
+            db_connection.commit()
+            print("Prediction input saved successfully!")
+            return cursor.lastrowid  # Return the ID of the newly inserted prediction input
+        except Exception as e:
+            print(f"Error saving prediction input: {e}")
+        finally:
+            cursor.close()
+    else:
+        print("No database connection available.")
+
+def save_prediction_result(input_id, result):
+    if db_connection:
+        try:
+            cursor = db_connection.cursor()
+            query = """
+                INSERT INTO prediction_results (input_id, result) 
+                VALUES (%s, %s)
+            """
+            cursor.execute(query, (input_id, result))
+            db_connection.commit()
+            print("Prediction result saved successfully!")
+        except Exception as e:
+            print(f"Error saving prediction result: {e}")
+        finally:
+            cursor.close()
+    else:
+        print("No database connection available.")
+
+def Save():
+
+    # get data of patients
+    registration_no = Registration.get()
+    patient_name = Name.get()
+    birth_year = DayOfYear.get()
+
+    # save patient data to database
+    patient_id = save_patient_data(registration_no, patient_name, birth_year)
+    if not patient_id:
+        messagebox.showerror("Error", "Failed to save patient data.")
         return
+    
+    # get data of prediction inputs
+    date = Date.get()
+    try: 
+        sex = genSelection()
+        cp = cpSelection()
+        trestbps_value = int(trestbps.get())
+        chol_value = int(chol.get())
+        thalach_value = int(thalach.get())
+        fbs_value = fbsSelection()
+        restecg_value = int(restecg_combobox.get())
+        exang_value = exangSelection()
+        oldpeak_value = float(oldpeak.get())
+        slope_value = int(slopeSelection())
+        ca_value = int(ca_combobox.get())
+        thal_value = int(thal_combobox.get())
+    except Exception as e:
+        messagebox.showerror("Error", "Please fill in all fields correctly.")
+        return
+    
+    # save prediction input to database
+    input_id = save_prediction_input(patient_id, date, sex, cp, fbs_value, restecg_value, trestbps_value, chol_value, thalach_value, exang_value, oldpeak_value, slope_value, ca_value, thal_value)
+
+    input_data = (birth_year, sex, cp, trestbps_value, chol_value, fbs_value, restecg_value, thalach_value, exang_value, oldpeak_value, slope_value, ca_value, thal_value)
+    input_array = np.asarray(input_data).reshape(1, -1)
+    prediction = model.predict(input_array)
+    result = int(prediction[0])
+
+    # save prediction result to database
+    save_prediction_result(input_id, result)
+
+    # show the message box 
+    messagebox.showinfo("Success", "Record Saved Successfully")
 
 # analysis button
 analysis_button = PhotoImage(file='images/Analysis.png')
